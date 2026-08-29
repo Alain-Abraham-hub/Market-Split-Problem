@@ -59,45 +59,71 @@ def build_iskay_input(
     backend_name: str = "auto",
     num_iterations: int = 3,
     shots: int = 10000,
+    preprocessing_level: int = 1,
+    transpilation_level: int = 3,
+    seed_transpiler: Optional[int] = 42,
     postprocessing_level: int = 2,
     job_tags: Optional[list] = None,
+    extra_options: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
-    Build the payload dictionary required by the Iskay Quantum Optimizer.
+    Build the full optimization payload for Kipu Quantum's Iskay Optimizer.
 
     Parameters
     ----------
     iskay_problem_dict : Dict[str, float]
-        Dictionary of QUBO/HUBO terms formatted for Iskay.
+        Dictionary of QUBO terms formatted as {'()': const, '(i, )': lin, '(i, j)': quad}.
     creds : dict
-        Credentials dictionary for querying backend status if 'auto'.
+        Credentials dictionary for resolving 'auto' backend selection.
     backend_name : str
-        Target IBM Quantum backend or 'auto' for the least busy (default: 'auto').
+        Target IBM Quantum backend (or 'auto' for the operational QPU with shortest queue).
     num_iterations : int
-        Number of bias-field iterations (default: 3).
+        Number of bias-field (bf-DCQO) iterations (default: 3, range: 1-10).
     shots : int
-        Number of shots per iteration (default: 10000).
+        Measurement shots per iteration (default: 10000, range: 100-100000).
+    preprocessing_level : int
+        Problem reduction level: 0 (None), 1 (Standard), 2 (Aggressive).
+    transpilation_level : int
+        Qiskit circuit transpiler optimization level (default: 3, range: 0-3).
+    seed_transpiler : int, optional
+        RNG seed for deterministic circuit layout and routing (default: 42).
     postprocessing_level : int
-        Local search refinement passes (default: 2, meaning 3 passes).
+        Local search passes on measured bitstrings: 0 (1 pass), 1 (2 passes), 2 (3 passes).
     job_tags : list, optional
-        Custom tags for tracking jobs in the IBM Quantum platform.
+        Custom tags for identifying this job in the IBM Quantum dashboard.
+    extra_options : dict, optional
+        Additional vendor options to pass to the solver.
 
     Returns
     -------
     dict
-        The payload dictionary to pass to `iskay_solver.run(**payload)`.
+        The payload dictionary ready to pass directly to `iskay_solver.run(**iskay_input)`.
     """
     if backend_name.lower() == "auto":
-        # Problem requires exactly as many qubits as variables
-        # (Minus 1 for the constant term '()' if we just count keys vaguely, but let's be safe)
         num_vars = sum(1 for k in iskay_problem_dict.keys() if ", )" in k)
         backend_name = get_least_busy_backend(creds, min_qubits=max(num_vars, 20))
-    options = {
+
+    options: Dict[str, Any] = {
+        # Algorithm configuration
         "num_iterations": num_iterations,
         "shots": shots,
+
+        # Preprocessing & Transpilation
+        "preprocessing_level": preprocessing_level,
+        "transpilation_level": transpilation_level,
+
+        # Postprocessing
         "postprocessing_level": postprocessing_level,
-        "job_tags": job_tags or ["market_split_optimization"],
+
+        # Tracking
+        "job_tags": job_tags or ["market_split", "iskay_optimization", "qoblib"],
     }
+
+    if seed_transpiler is not None:
+        options["seed_transpiler"] = seed_transpiler
+
+    if extra_options:
+        options.update(extra_options)
 
     iskay_input = {
         "problem": iskay_problem_dict,
