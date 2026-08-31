@@ -9,8 +9,8 @@ def get_credentials() -> Dict[str, str]:
     
     IMPORTANT: Do not commit your actual token or CRN to public version control!
     """
-    ibm_token = "ikTWj5DigvDSGgGxDZPSrfV0rSJXqaHlTSMzXRfiMCjo"
-    ibm_instance = "crn:v1:bluemix:public:quantum-computing:us-east:a/94761ff6d3874e7289dcdd83673edbcf:44f44ef9-fe70-4cf5-a4d7-bf3d79da147b::"
+    ibm_token = "PASTE_YOUR_IBM_QUANTUM_TOKEN_HERE"
+    ibm_instance = "PASTE_YOUR_INSTANCE_CRN_HERE"
 
     return {
         "token": ibm_token,
