@@ -124,7 +124,7 @@ def monitor_and_get_result(job, poll_interval: int = 20) -> Dict[str, Any]:
 
 def save_result_locally(
     result: Dict[str, Any],
-    output_path: str = "data/job_result.json",
+    output_path: str = "job_results/job_result.json",
 ):
     """Save the retrieved optimization result to disk for offline analysis."""
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -137,7 +137,7 @@ def run_iskay_execution(
     iskay_problem: Dict[str, float],
     options: Optional[Dict[str, Any]] = None,
     backend_name: str = "auto",
-    save_path: str = "data/job_result.json",
+    save_path: str = "job_results/job_result.json",
 ) -> Dict[str, Any]:
     """
     Complete execution pipeline for Iskay Quantum Optimizer.

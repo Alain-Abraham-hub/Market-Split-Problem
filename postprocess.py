@@ -119,8 +119,6 @@ def plot_market_split(x: np.ndarray, A: np.ndarray, b: np.ndarray, save_path: Op
 if __name__ == "__main__":
     # This block is here for testing postprocess.py individually.
     # It assumes data/ms_03_200_177.dat exists and a job_results directory has at least one json file.
-    import sys
-    
     try:
         from load_and_formulate import parse_marketsplit_dat
         
