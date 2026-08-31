@@ -36,18 +36,16 @@ def get_least_busy_backend(creds: Dict[str, str], min_qubits: int = 20) -> str:
     """
     print(f"Connecting to IBM Quantum to find the least busy backend (>={min_qubits} qubits)...")
     service = QiskitRuntimeService(
-        channel="ibm_quantum",
+        channel="ibm_cloud",
         token=creds["token"],
         instance=creds["instance"],
     )
 
-    # Filter for real hardware that is operational and large enough
-    backends = service.backends(simulator=False, operational=True, min_num_qubits=min_qubits)
-    
-    if not backends:
-        raise RuntimeError("No operational backends found meeting the criteria.")
-
-    least_busy = service.least_busy(backends)
+    # Use service.least_busy directly with the filter arguments
+    try:
+        least_busy = service.least_busy(simulator=False, operational=True, min_num_qubits=min_qubits)
+    except Exception as e:
+        raise RuntimeError(f"No operational backends found meeting the criteria: {e}")
     print(f"  → Selected least busy backend: {least_busy.name} (Queue: {least_busy.status().pending_jobs} jobs)")
     return least_busy.name
 

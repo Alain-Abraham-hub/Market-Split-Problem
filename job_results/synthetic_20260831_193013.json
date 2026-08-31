@@ -1,0 +1,31 @@
+{
+    "optimal_solution": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1
+    ],
+    "energy": -450.5,
+    "metadata": {
+        "backend": "ibm_synthetic_simulator",
+        "job_id": "mock_job_987654321",
+        "execution_time_s": 15.2,
+        "status": "DONE"
+    }
+}
